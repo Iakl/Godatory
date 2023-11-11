@@ -46,13 +46,8 @@ func escape_bbcode(bbcode_text):
 
 func plot(data_name:String, y_data:Array):
 	var plot_area = $Grid/PlotArea
-	var max_y = y_data.max()
-	var min_y = y_data.min()
-	var scaled_data:PackedVector2Array
-	var x_count = 0
-	for y in y_data:
-		scaled_data.append(Vector2(plot_area.get_size().x / (len(y_data) - 1) * x_count, y * plot_area.get_size().y / (min_y - max_y) + plot_area.size.y))
-		x_count += 1
+	var data_length = len(y_data)
+	var scaled_data = scale_data(y_data)
 	var line = Line2D.new()
 	line.set_default_color(Color(1, 0.443, 0.38))
 	line.set_width(2)
@@ -60,6 +55,17 @@ func plot(data_name:String, y_data:Array):
 	line.set_name(data_name)
 	plot_area.add_child(line)
 
+func scale_data(data:Array):
+	var plot_area = $Grid/PlotArea
+	var data_length = len(data)
+	var max_data = data.max()
+	var min_data = data.min()
+	var scaled_data:PackedVector2Array
+	var x_count = 0
+	for d in data:
+		scaled_data.append(Vector2(plot_area.get_size().x / (data_length - 1) * x_count, d * plot_area.get_size().y / (min_data - max_data) + plot_area.size.y))
+		x_count += 1
+	return scaled_data
 
 func set_title(title:String):
 	$Grid/Title.set_text("[center]%s[/center]" % [escape_bbcode(title)])
@@ -69,7 +75,15 @@ func set_x_label(label:String):
 	$Grid/X/Xlabel.set_text(label)
 	_on_resized()
 	
+func set_x_ticks_labels(labels:Array):
+	var ticks_container = $Grid/X/Xaxis/Ticks
+	var labels_number = len(labels)
+	set_x_ticks_number(labels_number - 1)
+	for i in labels_number:
+		ticks_container.get_child(i).set_label(str(labels[i]))
+	
 func set_x_ticks_number(value:int):
+	_x_ticks_number = value
 	var ticks_container = $Grid/X/Xaxis/Ticks
 	var plot_area = $Grid/PlotArea
 	var ticks_number = ticks_container.get_child_count() - 1
@@ -123,3 +137,4 @@ func _on_resized():
 	$Grid/X/Xaxis/ArrowLine.set_points([Vector2(0,0), Vector2(plot_area_size.x, 0)])
 	$Grid/X/Xaxis/Arrow.set_position(Vector2(plot_area_size.x, 0))
 	plot("demo", [0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
+	set_x_ticks_labels([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
