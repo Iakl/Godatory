@@ -1,0 +1,31 @@
+[gd_scene load_steps=3 format=3 uid="uid://dakjpw02nd5yp"]
+
+[ext_resource type="Script" path="res://Scenes/Plot/Scripts/ytick.gd" id="1_8k0q4"]
+[ext_resource type="FontFile" uid="uid://ciu5r8od57owq" path="res://Fonts/iakl.ttf" id="2_6n3t1"]
+
+[node name="Ticks" type="Node2D"]
+texture_filter = 1
+script = ExtResource("1_8k0q4")
+
+[node name="Tick" type="Line2D" parent="."]
+points = PackedVector2Array(0, 0, -3, 0)
+width = 2.0
+default_color = Color(0.968627, 0, 0, 1)
+
+[node name="Label" type="Label" parent="."]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -12.0
+offset_top = -10.0
+offset_right = -4.0
+offset_bottom = 7.0
+grow_horizontal = 2
+pivot_offset = Vector2(4, 8.5)
+theme_override_fonts/font = ExtResource("2_6n3t1")
+theme_override_font_sizes/font_size = 13
+text = "0"
+horizontal_alignment = 1
+vertical_alignment = 2
+
+[connection signal="minimum_size_changed" from="Label" to="." method="_on_label_minimum_size_changed"]

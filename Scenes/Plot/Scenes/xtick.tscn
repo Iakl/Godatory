@@ -1,0 +1,27 @@
+[gd_scene load_steps=3 format=3 uid="uid://tl6ks41fresc"]
+
+[ext_resource type="Script" path="res://Scenes/Plot/Scripts/xtick.gd" id="1_acqav"]
+[ext_resource type="FontFile" uid="uid://ciu5r8od57owq" path="res://Fonts/iakl.ttf" id="1_vbmti"]
+
+[node name="Ticks" type="Node2D"]
+texture_filter = 1
+script = ExtResource("1_acqav")
+
+[node name="Tick" type="Line2D" parent="."]
+points = PackedVector2Array(0, 0, 0, 3)
+width = 2.0
+default_color = Color(0.968627, 0, 0, 1)
+
+[node name="Label" type="Label" parent="."]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_right = 1.0
+offset_bottom = 14.0
+grow_horizontal = 2
+theme_override_fonts/font = ExtResource("1_vbmti")
+theme_override_font_sizes/font_size = 13
+horizontal_alignment = 1
+vertical_alignment = 2
+
+[connection signal="minimum_size_changed" from="Label" to="." method="_on_label_minimum_size_changed"]
