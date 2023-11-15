@@ -1,23 +1,22 @@
-[gd_scene load_steps=7 format=3 uid="uid://m0kl2qjm63nf"]
+[gd_scene load_steps=6 format=3 uid="uid://m0kl2qjm63nf"]
 
 [ext_resource type="Script" path="res://Scenes/Plot/Scripts/plot.gd" id="1_4xat2"]
 [ext_resource type="FontFile" uid="uid://ciu5r8od57owq" path="res://Fonts/iakl.ttf" id="2_4ekl1"]
 [ext_resource type="FontFile" uid="uid://c8dpt6kdwngf4" path="res://Fonts/iakl_bold.ttf" id="3_ub2s8"]
 [ext_resource type="Script" path="res://Scenes/Plot/Scripts/ylabel.gd" id="4_4i03s"]
 [ext_resource type="Texture2D" uid="uid://c1b4oasdwc5r8" path="res://Scenes/Plot/Images/iakl_arrow.png" id="4_wqmu6"]
-[ext_resource type="PackedScene" uid="uid://tl6ks41fresc" path="res://Scenes/Plot/Scenes/xtick.tscn" id="6_bjba3"]
 
 [node name="Plot" type="PanelContainer"]
 texture_filter = 1
-offset_right = 200.0
-offset_bottom = 120.0
+offset_right = 180.0
+offset_bottom = 100.0
 script = ExtResource("1_4xat2")
 
 [node name="Grid" type="GridContainer" parent="."]
 layout_mode = 2
-theme_override_constants/h_separation = -1
-theme_override_constants/v_separation = -1
-columns = 2
+theme_override_constants/h_separation = 0
+theme_override_constants/v_separation = 0
+columns = 3
 
 [node name="UpLeft" type="Control" parent="Grid"]
 layout_mode = 2
@@ -34,82 +33,96 @@ bbcode_enabled = true
 text = "[center] [/center]"
 fit_content = true
 
-[node name="Y" type="HBoxContainer" parent="Grid"]
+[node name="UpRight" type="Control" parent="Grid"]
 layout_mode = 2
 
+[node name="Y" type="HBoxContainer" parent="Grid"]
+layout_mode = 2
+theme_override_constants/separation = 0
+
 [node name="YlabelContainer" type="Container" parent="Grid/Y"]
-custom_minimum_size = Vector2(14, 1)
+custom_minimum_size = Vector2(17, 5)
 layout_mode = 2
 script = ExtResource("4_4i03s")
 
 [node name="Ypivot" type="Node2D" parent="Grid/Y/YlabelContainer"]
-position = Vector2(0, 87)
+position = Vector2(0, 69)
 rotation = -1.5708
 
 [node name="Ylabel" type="Label" parent="Grid/Y/YlabelContainer/Ypivot"]
 custom_minimum_size = Vector2(0, 14)
-offset_right = 87.0
-offset_bottom = 14.0
+offset_right = 69.0
+offset_bottom = 17.0
 theme_override_fonts/font = ExtResource("2_4ekl1")
 theme_override_font_sizes/font_size = 13
+text = " "
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="Yaxis" type="PanelContainer" parent="Grid/Y"]
+[node name="Yaxis" type="Control" parent="Grid/Y"]
 layout_mode = 2
 
 [node name="Arrow" type="Sprite2D" parent="Grid/Y/Yaxis"]
 z_index = 1
 texture = ExtResource("4_wqmu6")
+offset = Vector2(0, -8)
 
 [node name="ArrowLine" type="Line2D" parent="Grid/Y/Yaxis"]
 z_index = 1
-points = PackedVector2Array(0, 0, 0, 87)
+points = PackedVector2Array(0, -4, 0, 69)
 width = 2.0
 default_color = Color(0.968627, 0, 0, 1)
 
 [node name="Ticks" type="Control" parent="Grid/Y/Yaxis"]
 layout_mode = 2
+anchors_preset = 0
+offset_bottom = 67.0
 
 [node name="PlotArea" type="PanelContainer" parent="Grid"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
+[node name="Right" type="Control" parent="Grid"]
+custom_minimum_size = Vector2(10, 0)
+layout_mode = 2
+
 [node name="DownLeft" type="Control" parent="Grid"]
 layout_mode = 2
 
 [node name="X" type="VBoxContainer" parent="Grid"]
 layout_mode = 2
+theme_override_constants/separation = 0
 
-[node name="Xaxis" type="PanelContainer" parent="Grid/X"]
+[node name="Xaxis" type="Control" parent="Grid/X"]
 layout_mode = 2
 
 [node name="Arrow" type="Sprite2D" parent="Grid/X/Xaxis"]
 z_index = 1
-position = Vector2(183, 0)
+position = Vector2(153, 0)
 rotation = 1.5708
 texture = ExtResource("4_wqmu6")
+offset = Vector2(0, -8)
 
 [node name="ArrowLine" type="Line2D" parent="Grid/X/Xaxis"]
 z_index = 1
-points = PackedVector2Array(0, 0, 183, 0)
+points = PackedVector2Array(0, 0, 157, 0)
 width = 2.0
 default_color = Color(0.968627, 0, 0, 1)
 
 [node name="Ticks" type="Control" parent="Grid/X/Xaxis"]
 layout_mode = 2
-
-[node name="0" parent="Grid/X/Xaxis/Ticks" instance=ExtResource("6_bjba3")]
-position = Vector2(1, 0)
+anchors_preset = 0
 
 [node name="Xlabel" type="Label" parent="Grid/X"]
-custom_minimum_size = Vector2(0, 14)
 layout_mode = 2
 theme_override_fonts/font = ExtResource("2_4ekl1")
 theme_override_font_sizes/font_size = 13
 text = " "
 horizontal_alignment = 1
+
+[node name="DownRight" type="Control" parent="Grid"]
+layout_mode = 2
 
 [connection signal="resized" from="Grid/Y/YlabelContainer" to="Grid/Y/YlabelContainer" method="_on_resized"]
 [connection signal="minimum_size_changed" from="Grid/Y/YlabelContainer/Ypivot/Ylabel" to="Grid/Y/YlabelContainer" method="_on_ylabel_minimum_size_changed"]

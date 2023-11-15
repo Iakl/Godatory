@@ -5,7 +5,7 @@ signal height_changed(height)
 
 @onready var tick_label = $Label
 
-@export var label: String = "0":
+@export var label: String = "":
 	set(value):
 		label = value
 		set_label(value)

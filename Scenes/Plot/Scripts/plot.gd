@@ -5,6 +5,11 @@ const xTick_scn = preload("res://Scenes/Plot/Scenes/xtick.tscn")
 const yTick_scn = preload("res://Scenes/Plot/Scenes/ytick.tscn")
 
 @export_category("Plot")
+@export var plottest: int = 0:
+	set(value):
+		plot("demo", [0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
+		set_x_ticks_labels([00, 10, 20, 30, 40, 50, 60, 70, 80, 900])
+
 @export_group("Title")
 @export_multiline var _title: String = " ":
 	set(value):
@@ -47,7 +52,7 @@ func escape_bbcode(bbcode_text):
 func plot(data_name:String, y_data:Array):
 	var plot_area = $Grid/PlotArea
 	var data_length = len(y_data)
-	var scaled_data = scale_data(y_data)
+	var scaled_data = scale_data(y_data, 1)
 	var line = Line2D.new()
 	line.set_default_color(Color(1, 0.443, 0.38))
 	line.set_width(2)
@@ -55,16 +60,26 @@ func plot(data_name:String, y_data:Array):
 	line.set_name(data_name)
 	plot_area.add_child(line)
 
-func scale_data(data:Array):
+func resize_lines():
 	var plot_area = $Grid/PlotArea
+	for line in plot_area.get_children():
+		var y_coords = []
+		for point in line.get_points():
+			y_coords.append(point.y)
+		line.set_points(scale_data(y_coords))
+
+func scale_data(data:Array, invert=-1):
+	var plot_area = $Grid/PlotArea
+	var plot_size = plot_area.get_size()
 	var data_length = len(data)
 	var max_data = data.max()
 	var min_data = data.min()
 	var scaled_data:PackedVector2Array
 	var x_count = 0
 	for d in data:
-		scaled_data.append(Vector2(plot_area.get_size().x / (data_length - 1) * x_count, d * plot_area.get_size().y / (min_data - max_data) + plot_area.size.y))
+		scaled_data.append(Vector2(plot_size.x / (data_length - 1) * x_count, invert*d * plot_size.y / (min_data - max_data) + 0*plot_size.y))
 		x_count += 1
+	print(scaled_data)
 	return scaled_data
 
 func set_title(title:String):
@@ -74,16 +89,20 @@ func set_title(title:String):
 func set_x_label(label:String):
 	$Grid/X/Xlabel.set_text(label)
 	_on_resized()
+
+func set_x_axis_height(h):
+	var x_axis_container = $Grid/X/Xaxis
+	print(h)
+	x_axis_container.set_custom_minimum_size(Vector2(0, h))
 	
 func set_x_ticks_labels(labels:Array):
 	var ticks_container = $Grid/X/Xaxis/Ticks
 	var labels_number = len(labels)
-	set_x_ticks_number(labels_number - 1)
+	_x_ticks_number = labels_number - 1
 	for i in labels_number:
 		ticks_container.get_child(i).set_label(str(labels[i]))
 	
 func set_x_ticks_number(value:int):
-	_x_ticks_number = value
 	var ticks_container = $Grid/X/Xaxis/Ticks
 	var plot_area = $Grid/PlotArea
 	var ticks_number = ticks_container.get_child_count() - 1
@@ -96,14 +115,19 @@ func set_x_ticks_number(value:int):
 	elif value < ticks_number:
 		for i in ticks_number - value:
 			ticks_container.get_child(ticks_number - i).queue_free()
-	var tick_separation = plot_area.get_size().x / (value + 1)
+	var tick_separation = plot_area.get_size().x / value
 	for i in value:
 		ticks_container.get_child(i + 1).set_position(Vector2(tick_separation * (i + 1), 0))
 
 func set_x_ticks_rotation(value:float):
 	var x_ticks = $Grid/X/Xaxis/Ticks
+	var max_h = 0
 	for child in x_ticks.get_children():
 		child.set_tick_rotation(value)
+		var h = child.get_height()
+		if h > max_h:
+			max_h = h
+	set_x_axis_height(max_h)
 
 func set_y_ticks_number(value:int):
 	var ticks_container = $Grid/Y/Yaxis/Ticks
@@ -118,7 +142,7 @@ func set_y_ticks_number(value:int):
 	elif value < ticks_number:
 		for i in ticks_number - value:
 			ticks_container.get_child(ticks_number - i - 1).queue_free()
-	var tick_separation = plot_area.get_size().y / (value + 1)
+	var tick_separation = plot_area.get_size().y / value
 	for i in value:
 		ticks_container.get_child(i).set_position(Vector2(0, plot_area.get_size().y - tick_separation * (i + 1)))
 
@@ -133,8 +157,7 @@ func set_y_label(label:String):
 
 func _on_resized():
 	var plot_area_size = $Grid/PlotArea.get_size()
-	$Grid/Y/Yaxis/ArrowLine.set_points([Vector2(0,0), Vector2(0, plot_area_size.y)])
-	$Grid/X/Xaxis/ArrowLine.set_points([Vector2(0,0), Vector2(plot_area_size.x, 0)])
+	$Grid/Y/Yaxis/ArrowLine.set_points([Vector2(0,-4), Vector2(0, plot_area_size.y)])
+	$Grid/X/Xaxis/ArrowLine.set_points([Vector2(0,0), Vector2(plot_area_size.x + 4, 0)])
 	$Grid/X/Xaxis/Arrow.set_position(Vector2(plot_area_size.x, 0))
-	plot("demo", [0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
-	set_x_ticks_labels([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
+	resize_lines()
